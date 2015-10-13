@@ -1,4 +1,5 @@
-/*
+/* Emmanuel Podestá Junior, Fernando Paladini, Lucas Ribeiro Neis.
+
    Programacao Logica - Prof. Alexandre G. Silva - 30set2015
    
    RECOMENDACOES:
@@ -14,20 +15,56 @@
      ?- load.
      ?- searchAll(id1).
      
-   - change. Done and ready for test.
-   - changeFirst. Done and ready for test.
-   - changeLast. Done and ready for test.
+   - [Done] change. Done and ready for test.
+      * [Done] returning "false", I think it should return "true" instead (more friendly)
+      * [Done] When we got two or more identifiers (id40, id50 and so on), this method changes
+        the correct point, but "deletes" all points from different identifiers.
+
+        How to reproduce:
+          xy(id40, 0, 250).
+          xy(id40, 10, 10).
+          xy(id50, 30, 30).
+          xy(id50, 0, -2).
+          xy(id50, 40, 78).
+          xy(id60, 10000, 10000).
+
+        Then change some identifier calling change(id50, 0, -2, 10000, 10000).
+
+   - [Not a problem] changeFirst. Done and ready for test.
+      * Not changing only the first when points with same value appears:
+            xy(id40, 0, 250).
+            xy(id40, 0, 250).
+
+        This will change both values. Actually don't know if it is a real problem.
+        Anyway, can be easily solved just picking up the first point and ignoring others.
+
+   - [Done] changeLast. Done and ready for test.
+      * [Done] Couldn't test because the following error:
+          ?- changeLast(id50, 200, 20004).
+          ERROR: lUltimo/2: Undefined procedure: l/2
+          Exception: (9) l([[id50, 0, -200]], _G566) ? 
+
    - searchFirst. Done and ready for test.
+      * Okay.
+
    - searchLast. Done and ready for test.
+      * Okay.
+
    - undo.
+
    - remove. Done and ready for test.
+      * Okay.
+
    - quadrado. Done and ready for test.
+      * Okay.
+
    - figura. Done and ready for test.
+      * Okay.
+      
    - replica.
    - Colocar o nome e matricula de cada integrante do grupo
-     nestes comentarios iniciais do programa
+     nestes comentarios iniciais do programa. Done.
 */
-
 remove(Id, X, Y) :-
     retract(xy(Id, X, Y)).
 
@@ -76,15 +113,23 @@ quadrado(Id, X, Y, Lado) :-
     new(Id, 0, Lado),
     new(Id, Neg, 0).
 
-/*figura(Id, X, Y) :-
-    new(Id, X, Y),
-    new(Id, 200, 0),
-    new(Id, 150, 150),
-    new(Id, 0, 200),
-    new(Id, -150, 150),
-    new(Id, -200, 0),
-    new(Id, -150, -150),
-    new(Id, 0, -200).*/
+replicaSub(Id, N, Dx, Dy) :-
+    findall(Ponto, (xy(Id,X,Y), append([Id], [X], L1), append(L1, [Y], Ponto) ), All), length(All, T),
+    between(0, T, K),
+    nth0(K, All, V),
+    nth0(0, V, Ident),
+    nth0(1, V, Ex),
+    nth0(2, V, Uai),
+    atom_concat(Ident, N, NewIdent),
+    NewEx is Ex+(Dx*N),
+    NewUai is Uai+(Dy*N),
+    ((K =:= 0) -> new(NewIdent, NewEx, NewUai) ; new(NewIdent, Ex, Uai)),
+    false.
+
+replica(Id,N,Dx,Dy) :-
+    between(1, N, M),
+    replicaSub(Id, M, Dx, Dy),
+    false.
 
 figura(Id, X, Y, Lado) :-
     nb_setval(lado, Lado),
@@ -127,8 +172,6 @@ searchLast(Id, N) :-
     write(K),
     false.
 
-
-
 % Exibe opcoes de alteracao
 change :-
     write('change(Id,X,Y,Xnew,Ynew).  -> Altera o ponto inicial de <Id>'), nl,
@@ -136,7 +179,7 @@ change :-
     write('changeLast(Id,Xnew,Ynew).  -> Altera o deslocamento final de <Id>').
 
 change(Id, X, Y, Xnew, Ynew) :-
-    findall(Ponto, (xy(Id,U,W), append([Id], [U], L1), append(L1, [W], Ponto) ), All), length(All, T),
+    (findall(Ponto, (xy(Z,U,W), append([Z], [U], L1), append(L1, [W], Ponto) ), All), length(All, T),
     retractall(xy(_,_,_)),
     between(0, T, K),
     nth0(K, All, V),
@@ -144,10 +187,8 @@ change(Id, X, Y, Xnew, Ynew) :-
     nth0(1, V, Ex),
     nth0(2, V, Uai),
     ( Ident = Id, Ex = X, Uai = Y -> new(Ident, Xnew, Ynew);
-    new(Ident, Ex, Uai)),
-    false.
-
-
+    new(Ident, Ex, Uai)), false);
+    true.
 
 changeFirst(Id, Xnew, Ynew) :-
     remove(Id, _, _), !,
@@ -166,7 +207,7 @@ changeLast(Id, Xnew, Ynew) :-
 
 % ler o ultimo, 
 lUltimo([X], X).
-lUltimo([H|T], L) :- l(T, L).
+lUltimo([H|T], L) :- lUltimo(T, L).
 %ler todos
 lAll([X], X, K).
 lAll([H|T], L, K) :- lAll(T, L, K), H = K.
@@ -176,7 +217,7 @@ commit :-
     telling(Screen),
     tell(Stream),
     listing(xy),
-    listing(list),
+    %% listing(list),
     tell(Screen),
     close(Stream).
 
