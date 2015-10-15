@@ -65,8 +65,65 @@
    - Colocar o nome e matricula de cada integrante do grupo
      nestes comentarios iniciais do programa. Done.
 */
+/*  
+:- initialization(new0).
+
+% Implementacao incompleta:
+%   - Considera apenas id1 e efetua new sem verificar sua existencia
+%   - Supoe que ha' o xylast em 'desenhos.pl'
+new0 (Id):-
+    consult('gramatica.pl'),
+    load,
+    xylast(X, Y),
+    new(Id, X, Y).
+
+% Limpa os desenhos e reinicia no centro da tela (de 1000x1000)
+% Implementacao incompleta:
+%   - Considera apenas id1
+tartaruga(Id) :-
+    retractall(xy(_,_,_)),
+    new(Id, 500, 500),
+    retractall(xylast(_,_)),
+    asserta(xylast(500, 500)).
+
+% Para frente N passos
+% Implementacao incompleta:
+%   - Considera apenas id1
+%   - Somando apenas em X, ou seja, nao considera a inclinacao da tartaruga
+parafrente(N, Id) :-
+    write('Revisar: pf '), writeln(N),
+    xylast(X, Y),
+    Xnovo is X + N,
+    new(Id, Xnovo, Y),
+    retractall(xylast(_,_)),
+    asserta(xylast(Xnovo, Y)).
+
+% Para tras N passos
+paratras(N) :- 
+    write('Implementar: pt '), writeln(N).
+
+% Gira a direita G graus
+giradireita(G) :- 
+    write('Implementar: gd '), writeln(G),
+    ang(Id, H),
+    NewG is (H - G) mod 360,
+    (NewG < 0 -> )
+
+% Gira a esquerda G graus
+giraesquerda(G) :- 
+    write('Implementar: ge '), writeln(G).
+
+% Use nada (levanta lapis)
+usenada :- 
+    write('Implementar: un ').
+
+% Use lapis
+uselapis :- 
+    write('Implementar: un ').*/
+
 remove(Id, X, Y) :-
-    retract(xy(Id, X, Y)).
+    retract(xy(Id, X, Y)),
+    retract(list(Id, X, Y)).
 
 % undo :- 
 %     copy('desenhos.pl','backup.pl') :- 
@@ -84,6 +141,7 @@ undo:-
 % Apaga os predicados 'xy' da memoria e carrega os desenhos a partir de um arquivo de banco de dados
 load :-
     retractall(xy(_,_,_)),
+    retractall(list(_,_,_)),
     open('desenhos.pl', read, Stream),
     repeat,
         read(Stream, Data),
@@ -181,6 +239,7 @@ change :-
 change(Id, X, Y, Xnew, Ynew) :-
     (findall(Ponto, (xy(Z,U,W), append([Z], [U], L1), append(L1, [W], Ponto) ), All), length(All, T),
     retractall(xy(_,_,_)),
+    retractall(list(_,_,_)),
     between(0, T, K),
     nth0(K, All, V),
     nth0(0, V, Ident),
@@ -192,7 +251,8 @@ change(Id, X, Y, Xnew, Ynew) :-
 
 changeFirst(Id, Xnew, Ynew) :-
     remove(Id, _, _), !,
-    asserta(xy(Id, Xnew, Ynew)).
+    asserta(xy(Id, Xnew, Ynew)),
+    assertz(list(Id, Xnew, Ynew)).
 
 changeLast(Id, Xnew, Ynew) :-
       findall(Ponto, (xy(Id,X,Y), append([Id], [X], L1), append(L1, [Y], Ponto) ), All), length(All, T),
@@ -203,7 +263,8 @@ changeLast(Id, Xnew, Ynew) :-
       nth0(1, L, Ex),
       nth0(2, L, Uai),
       remove(Ident,Ex, Uai),
-      assertz(xy(Id, Xnew, Ynew)).
+      assertz(xy(Id, Xnew, Ynew)),
+      asserta(list(Id, Xnew, Ynew)), !.
 
 % ler o ultimo, 
 lUltimo([X], X).
@@ -217,7 +278,7 @@ commit :-
     telling(Screen),
     tell(Stream),
     listing(xy),
-    %% listing(list),
+    listing(list),
     tell(Screen),
     close(Stream).
 
