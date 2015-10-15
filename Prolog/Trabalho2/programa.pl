@@ -70,7 +70,7 @@
 
 % Implementacao incompleta:
 %   - Considera apenas id1 e efetua new sem verificar sua existencia
-%   - Supoe que ha' o xylast em 'desenhos.pl'
+%   - Supoe que ha o xylast em 'desenhos.pl'
 new0 (Id):-
     consult('gramatica.pl'),
     load,
@@ -217,9 +217,10 @@ searchFirst(Id, N) :-
     findall(Ponto, (xy(Id,X,Y), append([Id], [X], L1), append(L1, [Y], Ponto) ), All),
     nth0(0, All, M),
     write(M), nl,
-    between(1, N, X),
+    NewN is N - 1,
+    (NewN >= 1 -> between(1, NewN, X),
     nth0(X, All, K),
-    write(K), nl,
+    write(K), nl; false),
     false.
 
 searchLast(Id, N) :-
