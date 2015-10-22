@@ -64,27 +64,72 @@
    - replica.
    - Colocar o nome e matricula de cada integrante do grupo
      nestes comentarios iniciais do programa. Done.
-*/
-/*  
-:- initialization(new0).
 
+
+     Parte 2:
+
+     RECOMENDACOES:
+   
+   - O nome deste arquivo deve ser 'programa.pl'
+   - O nome do banco de dados deve ser 'desenhos.pl'
+   - O nome do arquivo de gramatica deve ser 'gramatica.pl'
+   
+   - Dicas de uso podem ser obtidas na execucação: 
+     ?- menu.
+     
+   - Exemplo de uso:
+     ?- load.
+     ?- searchAll(id1).
+
+   - Exemplo de uso da gramatica:
+     ?- comando([repita, '8', '[', pf, '50', gd, '45', ']'], []).
+     Ou simplesmente:
+     ?- cmd("repita 8[pf 50 gd 45]").
+     
+   - Colocar o nome e matricula de cada integrante do grupo
+     nestes comentarios iniciais do programa
+*/
+
+
+
+%:- initialization(new0(Id)).
+
+% Coloca tartaruga no centro da tela (de 1000x1000) [criar uma nova tartaruga].
 % Implementacao incompleta:
 %   - Considera apenas id1 e efetua new sem verificar sua existencia
 %   - Supoe que ha o xylast em 'desenhos.pl'
-new0 (Id):-
+
+new0(Id) :-
     consult('gramatica.pl'),
     load,
-    xylast(X, Y),
-    new(Id, X, Y).
+    uselapis,
+    ( existXylast(Id) -> xylast(Id, X, Y),     
+    newAng(Id, 90),
+    new(Id, X, Y),
+    retractall(xylast(Id,_,_)),
+    asserta(xylast(Id, X, Y));
+    newAng(Id, 90),
+    new(Id, 500, 500),
+    asserta(xylast(Id, 500, 500)),
+    true).
+
+
+existXylast(Id) :-
+    xylast(Id,_,_), !.
+
+
+newAng(Id, A) :- 
+    retractall(ang(Id,_)),
+    asserta(ang(Id, A)).
 
 % Limpa os desenhos e reinicia no centro da tela (de 1000x1000)
 % Implementacao incompleta:
 %   - Considera apenas id1
 tartaruga(Id) :-
-    retractall(xy(_,_,_)),
+    retractall(xy(Id,_,_)),
     new(Id, 500, 500),
-    retractall(xylast(_,_)),
-    asserta(xylast(500, 500)).
+    retractall(xylast(Id,_,_)),
+    asserta(xylast(Id, 500, 500)).
 
 % Para frente N passos
 % Implementacao incompleta:
@@ -92,38 +137,75 @@ tartaruga(Id) :-
 %   - Somando apenas em X, ou seja, nao considera a inclinacao da tartaruga
 parafrente(N, Id) :-
     write('Revisar: pf '), writeln(N),
-    xylast(X, Y),
-    Xnovo is X + N,
-    new(Id, Xnovo, Y),
-    retractall(xylast(_,_)),
-    asserta(xylast(Xnovo, Y)).
+    xylast(Id, X, Y),
+    ang(Id, G), write(G), nl,
+
+    XargP is (G*pi)/180, write(XargP), nl,
+    Xarg is cos(XargP)*N, write(Xarg), nl,
+    Xnovo is Xarg, write(Xnovo), nl,
+
+    YargP is (G*pi)/180, write(YargP), nl,
+    Yarg is sin(YargP)*N, write(Yarg), nl,
+    Ynovo is Yarg, write(Ynovo),
+
+  %  (mod(G,360) =:= )
+
+
+
+    nb_getval(lapis, L),
+    (L =:= 1 -> new(Id, Xnovo, Ynovo), retractall(xylast(Id,_, _)),
+    asserta(xylast(Id, Xnovo, Ynovo));
+    retractall(xylast(Id,_, _)),
+    asserta(xylast(Id, Xnovo, Ynovo))).
 
 % Para tras N passos
-paratras(N) :- 
-    write('Implementar: pt '), writeln(N).
+paratras(N, Id) :- 
+    write('Implementar: pt '), writeln(N),
+    xylast(Id, X, Y),
+    ang(Id, G), write(G), nl,
+
+    XargP is (G*pi)/180, write(XargP), nl,
+    Xarg is cos(XargP)*N, write(Xarg), nl,
+    Xnovo is Xarg*(-1), write(Xnovo),
+
+    YargP is (G*pi)/180, write(YargP), nl,
+    Yarg is sin(YargP)*N, write(Yarg), nl,
+    Ynovo is Yarg*(-1), write(Ynovo),
+
+    nb_getval(lapis, L),
+    (L =:= 1 -> new(Id, Xnovo, Ynovo), retractall(xylast(Id,_, _)),
+    asserta(xylast(Id, Xnovo, Ynovo));
+    retractall(xylast(Id,_, _)),
+    asserta(xylast(Id, Xnovo, Ynovo))).
 
 % Gira a direita G graus
-giradireita(G) :- 
-    write('Implementar: gd '), writeln(G),
+giradireita(Id, G) :- 
+
+    write('Implementar: ge '), writeln(G),
     ang(Id, H),
-    NewG is (H - G) mod 360,
-    (NewG < 0 -> )
+    NewG is H + G,
+    newAng(Id, NewG).
 
 % Gira a esquerda G graus
-giraesquerda(G) :- 
-    write('Implementar: ge '), writeln(G).
+giraesquerda(Id, G) :- 
+
+    write('Implementar: gd '), writeln(G),
+    ang(Id, H), write(H),
+    NewG is H - G,
+    newAng(Id, NewG).
+
 
 % Use nada (levanta lapis)
 usenada :- 
-    write('Implementar: un ').
+    write('Implementar: un '),
+    nb_setval(lapis, 0).
 
 % Use lapis
 uselapis :- 
-    write('Implementar: un ').*/
+    write('Implementar: ul '),
+    nb_setval(lapis, 1).
 
-remove(Id, X, Y) :-
-    retract(xy(Id, X, Y)),
-    retract(list(Id, X, Y)).
+
 
 % undo :- 
 %     copy('desenhos.pl','backup.pl') :- 
@@ -138,10 +220,16 @@ undo:-
   retract(list(A,B,C)),
   retract(xy(A,B,C)), !.
 
+remove(Id, X, Y) :-
+    retract(xy(Id, X, Y)),
+    retract(list(Id, X, Y)).
+
 % Apaga os predicados 'xy' da memoria e carrega os desenhos a partir de um arquivo de banco de dados
 load :-
     retractall(xy(_,_,_)),
     retractall(list(_,_,_)),
+    retractall(xylast(_,_,_)),
+    retractall(ang(_,_)),
     open('desenhos.pl', read, Stream),
     repeat,
         read(Stream, Data),
@@ -280,6 +368,8 @@ commit :-
     tell(Stream),
     listing(xy),
     listing(list),
+    listing(xylast),
+    listing(ang),
     tell(Screen),
     close(Stream).
 
