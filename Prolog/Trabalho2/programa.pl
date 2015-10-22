@@ -1,70 +1,6 @@
 /* Emmanuel Podestá Junior, Fernando Paladini, Lucas Ribeiro Neis.
 
    Programacao Logica - Prof. Alexandre G. Silva - 30set2015
-   
-   RECOMENDACOES:
-   
-   - O nome deste arquivo deve ser 'programa.pl'
-   
-   - O nome do banco de dados deve ser 'desenhos.pl'
-   
-   - Dicas de uso podem ser obtidas na execucação: 
-     ?- menu.
-     
-   - Exemplo de uso:
-     ?- load.
-     ?- searchAll(id1).
-     
-   - [Done] change. Done and ready for test.
-      * [Done] returning "false", I think it should return "true" instead (more friendly)
-      * [Done] When we got two or more identifiers (id40, id50 and so on), this method changes
-        the correct point, but "deletes" all points from different identifiers.
-
-        How to reproduce:
-          xy(id40, 0, 250).
-          xy(id40, 10, 10).
-          xy(id50, 30, 30).
-          xy(id50, 0, -2).
-          xy(id50, 40, 78).
-          xy(id60, 10000, 10000).
-
-        Then change some identifier calling change(id50, 0, -2, 10000, 10000).
-
-   - [Not a problem] changeFirst. Done and ready for test.
-      * Not changing only the first when points with same value appears:
-            xy(id40, 0, 250).
-            xy(id40, 0, 250).
-
-        This will change both values. Actually don't know if it is a real problem.
-        Anyway, can be easily solved just picking up the first point and ignoring others.
-
-   - [Done] changeLast. Done and ready for test.
-      * [Done] Couldn't test because the following error:
-          ?- changeLast(id50, 200, 20004).
-          ERROR: lUltimo/2: Undefined procedure: l/2
-          Exception: (9) l([[id50, 0, -200]], _G566) ? 
-
-   - searchFirst. Done and ready for test.
-      * Okay.
-
-   - searchLast. Done and ready for test.
-      * Okay.
-
-   - undo.
-
-   - remove. Done and ready for test.
-      * Okay.
-
-   - quadrado. Done and ready for test.
-      * Okay.
-
-   - figura. Done and ready for test.
-      * Okay.
-      
-   - replica.
-   - Colocar o nome e matricula de cada integrante do grupo
-     nestes comentarios iniciais do programa. Done.
-
 
      Parte 2:
 
@@ -88,11 +24,24 @@
      
    - Colocar o nome e matricula de cada integrante do grupo
      nestes comentarios iniciais do programa
+
+     [Testar]
+     - new0
+     - existXylast
+     - newAng
+     - tartaruga
+     - parafrente
+     - paratras
+     - giraesquerda
+     - giradireita
+     - usenada
+     - uselapis
+
 */
 
 
 
-%:- initialization(new0(Id)).
+%% :- initialization(new0(Id)).
 
 % Coloca tartaruga no centro da tela (de 1000x1000) [criar uma nova tartaruga].
 % Implementacao incompleta:
@@ -129,6 +78,8 @@ tartaruga(Id) :-
     retractall(xy(Id,_,_)),
     new(Id, 500, 500),
     retractall(xylast(Id,_,_)),
+    retractall(list(Id,_,_)),
+    retractall(ang(Id,_,_)),
     asserta(xylast(Id, 500, 500)).
 
 % Para frente N passos

@@ -3,5 +3,6 @@
      width="1000.0"
      height="1000.0"
      viewBox="0 0 1000.0 1000.0" >
-<path style="fill:none;stroke:#000000;stroke-width:1px" id="id4" d="m 500,500 6.123233995736766e-15,100.0 z" />
+<path style="fill:none;stroke:#000000;stroke-width:1px" id="t" d="m 500,500 6.123233995736766e-15,100.0 -1.2246467991473532e-14,-200.0 400.0,0.0 z" />
 </svg>
+
