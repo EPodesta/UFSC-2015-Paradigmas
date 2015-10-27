@@ -25,18 +25,48 @@
    - Colocar o nome e matricula de cada integrante do grupo
      nestes comentarios iniciais do programa
 
-     [Testar]
+     [Testar - Análise de 27/10/2015]
+      
+     - Genéricos:
+        * Remover todos os outputs feios do código do professor.
+
      - new0
+        * Se eu chamo new0(t) e new0(t1) e depois disso dou commit, só cria 't1'. Se eu chamo new0(t), 
+          commit, new0(t1) e commit cria 't' e 't1' no desenhos.pl. 
+
      - existXylast
      - newAng
-     - tartaruga
-     - parafrente
-     - paratras
-     - giraesquerda
-     - giradireita
-     - usenada
-     - uselapis
+        * Aceita ângulos negativos, mas pelo que testei não tem nenhum problema, funciona tranquilamente
+          com ângulo negativo.
 
+     - tartaruga
+        * Okay, mas é possível criar mais de uma tartaruga. Pelo que o professor falou na sala isso
+          não deveria ser possível, ou deveria?
+
+        * Notei uma diferença com relação ao new0, mas como não entendi muito bem a diferença deles pode
+          ser apenas besteira. Quando chamo o new0(meuId), é criado um novo xy, list, xylast e também
+          um ang/2. Quando chamo o tartaruga(meuId), é criado apenas o xy e o xylast. 
+
+     - parafrente
+        * Okay
+
+     - paratras
+        * Okay
+
+     - giraesquerda
+        * Okay
+  
+     - giradireita
+        * Okay
+
+     - usenada
+        * Após setar o 'usenada.' e rodar alguns comandos como newAng() e paratras() ele continuou
+        escrevendo em alguns trechos do 'desenhos.pl', mais especificamente em xylast e ang/2. Acho 
+        que mudar o ângulo não tem problema, pois ele não escreveu nada, mas mudar o xylast acho que 
+        não deveria ser feito.
+
+     - uselapis
+        * Okay
 */
 
 
