@@ -102,16 +102,16 @@
 new0 :-
     consult('gramatica.pl'),
     load,
-    nb_setval(l, -1),
+    (existeXyLast -> xylast(X, Y),
+    idlast(Nid),
+    nb_setval(nID, Nid),
+    uselapis;
+    newAng(90),
+    nb_setval(nID, -1),
     uselapis,
     nb_getval(atualId, Id),
-    (existeXyLast -> xylast(X, Y),
-    newAng(90), 
-    new(Id, X, Y),
-    asserta(xylast(X, Y));
-    newAng(90),
     new(Id, 500, 500),
-    asserta(xylast(500, 500)),    
+    asserta(xylast(500, 500)),   
     true).
 
 existeXyLast :- xylast(_,_), !.
@@ -125,6 +125,8 @@ newAng(A) :-
 %   - Considera apenas id1
 tartaruga :-
     retractall(xy(_,_,_)),
+    nb_setval(nID, -1),
+    uselapis,
     nb_getval(atualId, Id),
     new(Id, 500, 500),
     retractall(xylast(_,_)),
@@ -135,7 +137,6 @@ tartaruga :-
 %   - Considera apenas id1
 %   - Somando apenas em X, ou seja, nao considera a inclinacao da tartaruga
 parafrente(N) :-
-    write('Revisar: pf '), writeln(N),
     ang(G), write(G), nl,
 
     XargP is (G*pi)/180, write(XargP), nl,
@@ -161,7 +162,6 @@ parafrente(N) :-
 
 % Para tras N passos
 paratras(N) :- 
-    write('Implementar: pt '), writeln(N),
     ang(G), write(G), nl,
 
     XargP is (G*pi)/180, write(XargP), nl,
@@ -189,7 +189,6 @@ paratras(N) :-
 % Gira a direita G graus
 giradireita(G) :- 
 
-    write('Implementar: ge '), writeln(G),
     ang(H),
     NewG is H + G,
     newAng(NewG).
@@ -197,7 +196,6 @@ giradireita(G) :-
 % Gira a esquerda G graus
 giraesquerda(G) :- 
 
-    write('Implementar: gd '), writeln(G),
     ang(H), write(H),
     NewG is H - G,
     newAng(NewG).
@@ -205,33 +203,26 @@ giraesquerda(G) :-
 
 % Use nada (levanta lapis)
 usenada :- 
-    write('Implementar: un '),
     nb_setval(lapis, 0).
 
 % Use lapis Não tem como mudar o ID, trabalhamos com números relativos
 %como iremos retirar de um relativo o absoluto?
 uselapis :- 
-    write('Implementar: ul '),
     nb_setval(lapis, 1),
-    nb_getval(l, Ul), write(Ul),
+    nb_getval(nID, Ul), write(Ul),
     U is Ul + 1,
     write(U),
-    nb_setval(l, U),
+    nb_setval(nID, U),
+    retractall(idlast(_)),
+    asserta(idlast(U)),
     atom_concat(id, U, NewId),
     nb_setval(atualId, NewId),
-    (U >= 1 ->
+    (U >= 2 ->
     xylast(X, Y),
     new(NewId, X, Y); true).
 
 
 
-% undo :- 
-%     copy('desenhos.pl','backup.pl') :- 
-%     open('desenhos.pl',read,Stream1),
-%     open('backup.pl',write,Stream2),
-%     copy_stream_data('desenhos.pl','backup.pl'),
-%     close(File1),
-%     close(File2).
 
 undo:-
   list(A, B, C),
@@ -248,6 +239,7 @@ load :-
     retractall(list(_,_,_)),
     retractall(xylast(_,_)),
     retractall(ang(_)),
+    retractall(idlast(_)),
     open('desenhos.pl', read, Stream),
     repeat,
         read(Stream, Data),
@@ -388,6 +380,7 @@ commit :-
     listing(list),
     listing(xylast),
     listing(ang),
+    listing(idlast),
     tell(Screen),
     close(Stream).
 
