@@ -1,5 +1,5 @@
 % db2svg.pl compiled 0.00 sec, 10 clauses
-%  desenhos.pl compiled 0.00 sec, 13 clauses
+%  desenhos.pl compiled 0.00 sec, 17 clauses
 Welcome to SWI-Prolog (Multi-threaded, 64 bits, Version 6.6.4)
 Copyright (c) 1990-2013 University of Amsterdam, VU Amsterdam
 SWI-Prolog comes with ABSOLUTELY NO WARRANTY. This is free software,

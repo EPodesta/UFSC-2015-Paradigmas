@@ -3,6 +3,7 @@
      width="1000.0"
      height="1000.0"
      viewBox="0 0 1000.0 1000.0" >
-<path style="fill:none;stroke:#000000;stroke-width:1px" id="id1" d="m 700.0,500.0 -200.0,-2.4492935982947064e-14 z" />
-<path style="fill:none;stroke:#000000;stroke-width:1px" id="id0" d="m 500,500 1.2246467991473532e-14,200.0 200.0,0.0 z" />
+<path style="fill:none;stroke:#000000;stroke-width:1px" id="id2" d="m 500.0,700.0 200.0,0.0 z" />
+<path style="fill:none;stroke:#000000;stroke-width:1px" id="id1" d="m 500.0,700.0 -200.0,2.4492935982947064e-14 z" />
+<path style="fill:none;stroke:#000000;stroke-width:1px" id="id0" d="m 500,500 1.2246467991473532e-14,200.0 1.2246467991473532e-14,200.0 z" />
 </svg>

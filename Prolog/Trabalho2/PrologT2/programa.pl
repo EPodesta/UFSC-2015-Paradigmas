@@ -162,23 +162,29 @@ parafrente(N) :-
 % Para tras N passos
 paratras(N) :- 
     write('Implementar: pt '), writeln(N),
-    xylast(X, Y),
     ang(G), write(G), nl,
 
     XargP is (G*pi)/180, write(XargP), nl,
     Xarg is cos(XargP)*N, write(Xarg), nl,
-    Xnovo is Xarg*(-1), write(Xnovo),
+    Xnovo is Xarg*(-1), write(Xnovo), nl,
 
     YargP is (G*pi)/180, write(YargP), nl,
     Yarg is sin(YargP)*N, write(Yarg), nl,
     Ynovo is Yarg*(-1), write(Ynovo),
 
+
     nb_getval(lapis, L),
     nb_getval(atualId, Id),
+    xylast(X, Y),
     (L =:= 1 -> new(Id, Xnovo, Ynovo), retractall(xylast(_, _)),
-    asserta(xylast(Xnovo, Ynovo));
+    Xn is X + Xnovo,
+    Yn is Y + Ynovo,
+    asserta(xylast(Xn, Yn));
     retractall(xylast(_, _)),
-    asserta(xylast(Xnovo, Ynovo))).
+    Xn is X + Xnovo,
+    Yn is Y + Ynovo,
+    asserta(xylast(Xn, Yn))).
+
 
 % Gira a direita G graus
 giradireita(G) :- 
