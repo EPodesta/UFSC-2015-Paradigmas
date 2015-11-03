@@ -256,7 +256,6 @@ uselapis :-
     new(NewId, X, Y); true).
 
 % Nova Funcionalidade: Esse predicado será responsável por repetir o último comando dado ao programa.
-% Ele retornará false no 
 repitaUltimoComando(N) :-
     lastCmd(Num, Valor),
     between(1, N, K),
