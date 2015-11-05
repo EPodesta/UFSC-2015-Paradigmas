@@ -123,10 +123,9 @@ new0 :-
 
 existeXyLast :- xylast(_,_), !.
 
-% É criado um novo ângulo no banco de dados.
+% É criado um novo ângulo no banco de dados. Não faz sentido repetir este comando, pois ele será usado
+% indiretamente pelo giraesquerda e giradireita.
 newAng(A) :- 
-    retractall(lastCmd(_,_)),
-    asserta(lastCmd(newAng, A)),
     retractall(ang(_)),
     asserta(ang(A)).
 
@@ -152,15 +151,15 @@ tartaruga :-
 parafrente(N) :-
     retractall(lastCmd(_,_)),
     asserta(lastCmd(parafrente, N)),
-    ang(G), write(G), nl,
+    ang(G),
 
-    XargP is (G*pi)/180, write(XargP), nl,
-    Xarg is cos(XargP)*N, write(Xarg), nl,
-    Xnovo is Xarg, write(Xnovo), nl,
+    XargP is (G*pi)/180,
+    Xarg is cos(XargP)*N,
+    Xnovo is Xarg,
 
-    YargP is (G*pi)/180, write(YargP), nl,
-    Yarg is sin(YargP)*N, write(Yarg), nl,
-    Ynovo is Yarg, write(Ynovo),
+    YargP is (G*pi)/180,
+    Yarg is sin(YargP)*N,
+    Ynovo is Yarg,
 
 
     nb_getval(lapis, L),
@@ -181,15 +180,15 @@ parafrente(N) :-
 paratras(N) :- 
     retractall(lastCmd(_,_)),
     asserta(lastCmd(paratras, N)),
-    ang(G), write(G), nl,
+    ang(G),
 
-    XargP is (G*pi)/180, write(XargP), nl,
-    Xarg is cos(XargP)*N, write(Xarg), nl,
-    Xnovo is Xarg*(-1), write(Xnovo), nl,
+    XargP is (G*pi)/180,
+    Xarg is cos(XargP)*N,
+    Xnovo is Xarg*(-1),
 
-    YargP is (G*pi)/180, write(YargP), nl,
-    Yarg is sin(YargP)*N, write(Yarg), nl,
-    Ynovo is Yarg*(-1), write(Ynovo),
+    YargP is (G*pi)/180,
+    Yarg is sin(YargP)*N,
+    Ynovo is Yarg*(-1),
 
 
     nb_getval(lapis, L),
@@ -221,7 +220,7 @@ giradireita(G) :-
 giraesquerda(G) :- 
     retractall(lastCmd(_,_)),
     asserta(lastCmd(giraesquerda, G)),
-    ang(H), write(H),
+    ang(H),
     NewG is H - G,
     newAng(NewG).
 
@@ -243,9 +242,8 @@ uselapis :-
     retractall(lastCmd(_,_)),
     asserta(lastCmd(uselapis, 0)),
     nb_setval(lapis, 1),
-    nb_getval(nID, Ul), write(Ul),
+    nb_getval(nID, Ul),
     U is Ul + 1,
-    write(U),
     nb_setval(nID, U),
     retractall(idlast(_)),
     asserta(idlast(U)),
@@ -255,7 +253,7 @@ uselapis :-
     xylast(X, Y),
     new(NewId, X, Y); true).
 
-% Nova Funcionalidade: Esse predicado será responsável por repetir o último comando dado ao programa.
+% Nova Funcionalidade: Esse predicado será responsável por repetir N vezes o último comando dado ao programa.
 repitaUltimoComando(N) :-
     lastCmd(Num, Valor),
     between(1, N, K),
