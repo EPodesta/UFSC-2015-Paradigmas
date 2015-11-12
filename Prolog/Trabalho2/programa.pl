@@ -1,6 +1,70 @@
 /* Emmanuel Podestá Junior, Fernando Paladini, Lucas Ribeiro Neis.
 
    Programacao Logica - Prof. Alexandre G. Silva - 30set2015
+   
+   RECOMENDACOES:
+   
+   - O nome deste arquivo deve ser 'programa.pl'
+   
+   - O nome do banco de dados deve ser 'desenhos.pl'
+   
+   - Dicas de uso podem ser obtidas na execucação: 
+     ?- menu.
+     
+   - Exemplo de uso:
+     ?- load.
+     ?- searchAll(id1).
+     
+   - [Done] change. Done and ready for test.
+      * [Done] returning "false", I think it should return "true" instead (more friendly)
+      * [Done] When we got two or more identifiers (id40, id50 and so on), this method changes
+        the correct point, but "deletes" all points from different identifiers.
+
+        How to reproduce:
+          xy(id40, 0, 250).
+          xy(id40, 10, 10).
+          xy(id50, 30, 30).
+          xy(id50, 0, -2).
+          xy(id50, 40, 78).
+          xy(id60, 10000, 10000).
+
+        Then change some identifier calling change(id50, 0, -2, 10000, 10000).
+
+   - [Not a problem] changeFirst. Done and ready for test.
+      * Not changing only the first when points with same value appears:
+            xy(id40, 0, 250).
+            xy(id40, 0, 250).
+
+        This will change both values. Actually don't know if it is a real problem.
+        Anyway, can be easily solved just picking up the first point and ignoring others.
+
+   - [Done] changeLast. Done and ready for test.
+      * [Done] Couldn't test because the following error:
+          ?- changeLast(id50, 200, 20004).
+          ERROR: lUltimo/2: Undefined procedure: l/2
+          Exception: (9) l([[id50, 0, -200]], _G566) ? 
+
+   - searchFirst. Done and ready for test.
+      * Okay.
+
+   - searchLast. Done and ready for test.
+      * Okay.
+
+   - undo.
+
+   - remove. Done and ready for test.
+      * Okay.
+
+   - quadrado. Done and ready for test.
+      * Okay.
+
+   - figura. Done and ready for test.
+      * Okay.
+      
+   - replica.
+   - Colocar o nome e matricula de cada integrante do grupo
+     nestes comentarios iniciais do programa. Done.
+
 
      Parte 2:
 
@@ -24,177 +88,191 @@
      
    - Colocar o nome e matricula de cada integrante do grupo
      nestes comentarios iniciais do programa
-
-     [Testar - Análise de 27/10/2015]
-      
-     - Genéricos:
-        * Remover todos os outputs feios do código do professor.
-
-     - new0
-        * Se eu chamo new0(t) e new0(t1) e depois disso dou commit, só cria 't1'. Se eu chamo new0(t), 
-          commit, new0(t1) e commit cria 't' e 't1' no desenhos.pl. 
-
-     - existXylast
-     - newAng
-        * Aceita ângulos negativos, mas pelo que testei não tem nenhum problema, funciona tranquilamente
-          com ângulo negativo.
-
-     - tartaruga
-        * Okay, mas é possível criar mais de uma tartaruga. Pelo que o professor falou na sala isso
-          não deveria ser possível, ou deveria?
-
-        * Notei uma diferença com relação ao new0, mas como não entendi muito bem a diferença deles pode
-          ser apenas besteira. Quando chamo o new0(meuId), é criado um novo xy, list, xylast e também
-          um ang/2. Quando chamo o tartaruga(meuId), é criado apenas o xy e o xylast. 
-
-     - parafrente
-        * Okay
-
-     - paratras
-        * Okay
-
-     - giraesquerda
-        * Okay
-  
-     - giradireita
-        * Okay
-
-     - usenada
-        * Após setar o 'usenada.' e rodar alguns comandos como newAng() e paratras() ele continuou
-        escrevendo em alguns trechos do 'desenhos.pl', mais especificamente em xylast e ang/2. Acho 
-        que mudar o ângulo não tem problema, pois ele não escreveu nada, mas mudar o xylast acho que 
-        não deveria ser feito.
-
-     - uselapis
-        * Okay
 */
 
 
-
-%% :- initialization(new0(Id)).
+% Inicializa o programa chamando o predicado new0.
+:- initialization(new0).
 
 % Coloca tartaruga no centro da tela (de 1000x1000) [criar uma nova tartaruga].
-% Implementacao incompleta:
-%   - Considera apenas id1 e efetua new sem verificar sua existencia
-%   - Supoe que ha o xylast em 'desenhos.pl'
+% É verificado se existe um xylast, caso exista é adicionado um novo ponto onde estava o xylast.
+% É utilizado o próprio "uselapis" para isso, pois nele já temos a inserção de um ponto de acordo com
+% o xylast e o IdAtual do programa.
+% Caso contrário, criamos um novo ponto na posição 500, 500, note que agora é utilizado o uselapis junto
+% com a inserção de um ponto com "new(Id, 500, 500)", isso deve-se ao fato que quando o "uselapis" for chamado
+% como é a primeira execução, pois não existe um xylast, ele não adicionará um novo ponto como mencionado 
+% anteriormente. Logo, quando for a primeira execução é adicionado um ponto no 500, 500 e criado um Id do "zero".
+% Caso seja uma execução nova do programa, é utilizado o Id mais atual, de outra execução, e o ponto onde a tartaruga
+% parou. Com cada execução, o Id será modificado.
+% É importante salientar que a tartaruga começa, na perspectiva do usuário, em 90 graus para baixo.
 
-new0(Id) :-
+new0 :-
     consult('gramatica.pl'),
     load,
+    (existeXyLast -> xylast(X, Y),
+    idlast(Nid),
+    nb_setval(nID, Nid),
+    uselapis;
+    newAng(90),
+    nb_setval(nID, -1),
     uselapis,
-    ( existXylast(Id) -> xylast(Id, X, Y),     
-    newAng(Id, 90),
-    new(Id, X, Y),
-    retractall(xylast(Id,_,_)),
-    asserta(xylast(Id, X, Y));
-    newAng(Id, 90),
+    nb_getval(atualId, Id),
     new(Id, 500, 500),
-    asserta(xylast(Id, 500, 500)),
+    asserta(xylast(500, 500)),   
     true).
 
+existeXyLast :- xylast(_,_), !.
 
-existXylast(Id) :-
-    xylast(Id,_,_), !.
-
-
-newAng(Id, A) :- 
-    retractall(ang(Id,_)),
-    asserta(ang(Id, A)).
+% É criado um novo ângulo no banco de dados. Não faz sentido repetir este comando, pois ele será usado
+% indiretamente pelo giraesquerda e giradireita.
+newAng(A) :- 
+    retractall(ang(_)),
+    asserta(ang(A)).
 
 % Limpa os desenhos e reinicia no centro da tela (de 1000x1000)
-% Implementacao incompleta:
-%   - Considera apenas id1
-tartaruga(Id) :-
-    retractall(xy(Id,_,_)),
+% É dado um "reset" no desenho, limpamos todo o banco de dados de "xy", é resetado o IdAtual. Após isso,
+% é contruido um novo ponto, no centro da tela, e adiconado um novo xylast para referenciar o centro da
+% tela. Isto é, neste predicado é feito um "reset", como se fosse a primeira execução do programa.
+tartaruga :-
+    retractall(lastCmd(_,_)),
+    asserta(lastCmd(tartaruga, 0)),
+    retractall(xy(_,_,_)),
+    nb_setval(nID, -1),
+    uselapis,
+    nb_getval(atualId, Id),
     new(Id, 500, 500),
-    retractall(xylast(Id,_,_)),
-    retractall(list(Id,_,_)),
-    retractall(ang(Id,_,_)),
-    asserta(xylast(Id, 500, 500)).
+    retractall(xylast(_,_)),
+    asserta(xylast(500, 500)).
 
 % Para frente N passos
-% Implementacao incompleta:
-%   - Considera apenas id1
-%   - Somando apenas em X, ou seja, nao considera a inclinacao da tartaruga
-parafrente(N, Id) :-
-    write('Revisar: pf '), writeln(N),
-    xylast(Id, X, Y),
-    ang(Id, G), write(G), nl,
+% Neste predicado é feita uma série de operações matemáticas para calcular o quanto a tartaruga andará de acordo com o seu ângulo.
+% Após estas operações, é verificado se a variável global "lapis" está em 1("setada"), caso esteja criamos um novo ponto xy no banco de dados para ser feito o desenho.
+% Caso contrário, não adicionamos um novo ponto, pois o lápis não está no "papel", com isso a tartaruga andará sem marcar.
+parafrente(N) :-
+    retractall(lastCmd(_,_)),
+    asserta(lastCmd(parafrente, N)),
+    ang(G),
 
-    XargP is (G*pi)/180, write(XargP), nl,
-    Xarg is cos(XargP)*N, write(Xarg), nl,
-    Xnovo is Xarg, write(Xnovo), nl,
+    XargP is (G*pi)/180,
+    Xarg is cos(XargP)*N,
+    Xnovo is Xarg,
 
-    YargP is (G*pi)/180, write(YargP), nl,
-    Yarg is sin(YargP)*N, write(Yarg), nl,
-    Ynovo is Yarg, write(Ynovo),
-
-  %  (mod(G,360) =:= )
-
+    YargP is (G*pi)/180,
+    Yarg is sin(YargP)*N,
+    Ynovo is Yarg,
 
 
     nb_getval(lapis, L),
-    (L =:= 1 -> new(Id, Xnovo, Ynovo), retractall(xylast(Id,_, _)),
-    asserta(xylast(Id, Xnovo, Ynovo));
-    retractall(xylast(Id,_, _)),
-    asserta(xylast(Id, Xnovo, Ynovo))).
+    nb_getval(atualId, Id),
+    xylast(X, Y),
+    (L =:= 1 -> new(Id, Xnovo, Ynovo), retractall(xylast(_, _)),
+    Xn is X + Xnovo,
+    Yn is Y + Ynovo,
+    asserta(xylast(Xn, Yn));
+    retractall(xylast(_, _)),
+    Xn is X + Xnovo,
+    Yn is Y + Ynovo,
+    asserta(xylast(Xn, Yn))).
 
 % Para tras N passos
-paratras(N, Id) :- 
-    write('Implementar: pt '), writeln(N),
-    xylast(Id, X, Y),
-    ang(Id, G), write(G), nl,
+% Este predicado opera da mesma forma que o anterior, contudo multiplicamos o resultado da equação por -1
+% fazendo com que ele ande para tras no desenho.
+paratras(N) :- 
+    retractall(lastCmd(_,_)),
+    asserta(lastCmd(paratras, N)),
+    ang(G),
 
-    XargP is (G*pi)/180, write(XargP), nl,
-    Xarg is cos(XargP)*N, write(Xarg), nl,
-    Xnovo is Xarg*(-1), write(Xnovo),
+    XargP is (G*pi)/180,
+    Xarg is cos(XargP)*N,
+    Xnovo is Xarg*(-1),
 
-    YargP is (G*pi)/180, write(YargP), nl,
-    Yarg is sin(YargP)*N, write(Yarg), nl,
-    Ynovo is Yarg*(-1), write(Ynovo),
+    YargP is (G*pi)/180,
+    Yarg is sin(YargP)*N,
+    Ynovo is Yarg*(-1),
+
 
     nb_getval(lapis, L),
-    (L =:= 1 -> new(Id, Xnovo, Ynovo), retractall(xylast(Id,_, _)),
-    asserta(xylast(Id, Xnovo, Ynovo));
-    retractall(xylast(Id,_, _)),
-    asserta(xylast(Id, Xnovo, Ynovo))).
+    nb_getval(atualId, Id),
+    xylast(X, Y),
+    (L =:= 1 -> new(Id, Xnovo, Ynovo), retractall(xylast(_, _)),
+    Xn is X + Xnovo,
+    Yn is Y + Ynovo,
+    asserta(xylast(Xn, Yn));
+    retractall(xylast(_, _)),
+    Xn is X + Xnovo,
+    Yn is Y + Ynovo,
+    asserta(xylast(Xn, Yn))).
 
-% Gira a direita G graus
-giradireita(Id, G) :- 
 
-    write('Implementar: ge '), writeln(G),
-    ang(Id, H),
+% Gira a direita G graus.
+% É somado o valor G ao valor do ângulo já existente.
+% É considerado a direta da tartaruga.
+giradireita(G) :- 
+    retractall(lastCmd(_,_)),
+    asserta(lastCmd(giradireita, G)),
+    ang(H),
     NewG is H + G,
-    newAng(Id, NewG).
+    newAng(NewG).
 
-% Gira a esquerda G graus
-giraesquerda(Id, G) :- 
-
-    write('Implementar: gd '), writeln(G),
-    ang(Id, H), write(H),
+% Gira a esquerda G graus.
+% É subtraido o valor do G ao valor do ângulo já existente.
+% É considerado a esquerda da tartaruga.
+giraesquerda(G) :- 
+    retractall(lastCmd(_,_)),
+    asserta(lastCmd(giraesquerda, G)),
+    ang(H),
     NewG is H - G,
-    newAng(Id, NewG).
+    newAng(NewG).
 
 
 % Use nada (levanta lapis)
 usenada :- 
-    write('Implementar: un '),
+    retractall(lastCmd(_,_)),
+    asserta(lastCmd(usenada, 0)),
     nb_setval(lapis, 0).
 
-% Use lapis
+% Use lapis.
+% Esse predicado será responsável por colocar a variável global "lapis" em 1, para mostrar que o lápis está no papel.
+% Ele será responsável, também, por modificar o Id atual toda vez que ele for chamado, fazendo com que os desenhos sejam
+% independentes, para isso é atribuido a um elemento do banco de dados o valor do idAtual. Caso o uselapis estaja sendo 
+% executado pela primeira vez(a chamada veio do "new0"), ele apenas retornará "true", pois o "new0" será responsável por adicionar
+% o ponto na primeira execução. Nas próximas execuções do "uselapis", ele que adicionará o novo ponto, esse ponto será o 
+% xylast.
 uselapis :- 
-    write('Implementar: ul '),
-    nb_setval(lapis, 1).
+    retractall(lastCmd(_,_)),
+    asserta(lastCmd(uselapis, 0)),
+    nb_setval(lapis, 1),
+    nb_getval(nID, Ul),
+    U is Ul + 1,
+    nb_setval(nID, U),
+    retractall(idlast(_)),
+    asserta(idlast(U)),
+    atom_concat(id, U, NewId),
+    nb_setval(atualId, NewId),
+    (U >= 1 ->
+    xylast(X, Y),
+    new(NewId, X, Y); true).
 
+% Nova Funcionalidade: Esse predicado será responsável por repetir N vezes o último comando dado ao programa.
+repitaUltimoComando(N) :-
+    lastCmd(Num, Valor),
+    between(1, N, K),
+    (Num = parafrente -> parafrente(Valor);
+        (Num = paratras -> paratras(Valor);
+            (Num = giradireita-> giradireita(Valor);
+                (Num = giraesquerda -> giraesquerda(Valor);
+                    (Num = newAng -> newAng(Valor);
+                        (Num = usenada -> usenada;
+                            (Num = uselapis -> uselapis
+                            )
+                        )
+                    )
+                )
+            )
+        )
+    ),
+    false; true.
 
-
-% undo :- 
-%     copy('desenhos.pl','backup.pl') :- 
-%     open('desenhos.pl',read,Stream1),
-%     open('backup.pl',write,Stream2),
-%     copy_stream_data('desenhos.pl','backup.pl'),
-%     close(File1),
-%     close(File2).
 
 undo:-
   list(A, B, C),
@@ -209,8 +287,10 @@ remove(Id, X, Y) :-
 load :-
     retractall(xy(_,_,_)),
     retractall(list(_,_,_)),
-    retractall(xylast(_,_,_)),
-    retractall(ang(_,_)),
+    retractall(xylast(_,_)),
+    retractall(ang(_)),
+    retractall(idlast(_)),
+    retractall(lastCmd(_,_)),
     open('desenhos.pl', read, Stream),
     repeat,
         read(Stream, Data),
@@ -351,6 +431,8 @@ commit :-
     listing(list),
     listing(xylast),
     listing(ang),
+    listing(idlast),
+    listing(lastCmd),
     tell(Screen),
     close(Stream).
 

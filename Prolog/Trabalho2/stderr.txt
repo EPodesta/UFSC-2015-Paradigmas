@@ -1,9 +1,10 @@
-Welcome to SWI-Prolog (Multi-threaded, 64 bits, Version 7.3.5-35-gf6ab769)
-Copyright (c) 1990-2015 University of Amsterdam, VU Amsterdam
+% db2svg.pl compiled 0.00 sec, 10 clauses
+%  desenhos.pl compiled 0.00 sec, 13 clauses
+Welcome to SWI-Prolog (Multi-threaded, 64 bits, Version 6.6.4)
+Copyright (c) 1990-2013 University of Amsterdam, VU Amsterdam
 SWI-Prolog comes with ABSOLUTELY NO WARRANTY. This is free software,
 and you are welcome to redistribute it under certain conditions.
 Please visit http://www.swi-prolog.org for details.
 
 For help, use ?- help(Topic). or ?- apropos(Word).
 
-% halt

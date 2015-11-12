@@ -3,7 +3,5 @@
      width="1000.0"
      height="1000.0"
      viewBox="0 0 1000.0 1000.0" >
-<path style="fill:none;stroke:#000000;stroke-width:1px" id="t2" d="m 500,500 z" />
-<path style="fill:none;stroke:#000000;stroke-width:1px" id="t1" d="m 500,500 -499.9999999999998,-866.0254037844387 z" />
+<path style="fill:none;stroke:#000000;stroke-width:1px" id="id0" d="m 500,500 6.123233995736766e-15,100.0 -100.0,-0.0 -1.8369701987210297e-14,100.0 z" />
 </svg>
-
