@@ -56,7 +56,7 @@ negativo(FileName) :-
     atomic_list_concat(Y, '.', X),
     nth0(0, Y, Li),
     atom_concat(Li, '_out.pgm', NewFileName),
-    writePGM(NewFileName, M),!.
+    writePGM(NewFileName, M).
 
 sub_neg([], []) :-
     !.
