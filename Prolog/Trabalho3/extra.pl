@@ -48,12 +48,19 @@ value([(X,Y,V)|_], (X,Y,V)).
 value([_|St], (X,Y,Z)) :-
     value(St, (X,Y,Z)).  
 
-negativo(M, W) :-
-    coord(M, S),
-    Faça o tamanho da lista,
-    Colete o n elemento,
-    pegue o ultimo elemento da tupla,
-    subtraia de 255,
-    coloque em outra lista,
-    repita,
-    retorne nova lista.
+negativo(FileName) :-
+    load(FileName, S),
+    sub_neg(S, SS),
+    coord2matrix(SS, M),
+    atom_codes(X, FileName),
+    atomic_list_concat(Y, '.', X),
+    nth0(0, Y, Li),
+    atom_concat(Li, '_out.pgm', NewFileName),
+    writePGM(NewFileName, M),!.
+
+sub_neg([], []) :-
+    !.
+sub_neg([(X, Y, I)|T_input], [H_output|T_output]) :-
+    New_intensity is 255 - I,
+    copy_term((X, Y, New_intensity), H_output),
+    sub_neg(T_input, T_output).
