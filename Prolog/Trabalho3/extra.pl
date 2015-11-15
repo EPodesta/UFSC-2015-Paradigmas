@@ -48,6 +48,7 @@ value([(X,Y,V)|_], (X,Y,V)).
 value([_|St], (X,Y,Z)) :-
     value(St, (X,Y,Z)).  
 
+%-----------------Negativo----------------
 negativo(FileName) :-
     load(FileName, S),
     sub_neg(S, SS),
@@ -64,3 +65,107 @@ sub_neg([(X, Y, I)|T_input], [H_output|T_output]) :-
     New_intensity is 255 - I,
     copy_term((X, Y, New_intensity), H_output),
     sub_neg(T_input, T_output).
+
+%------------------Pixel isolado---------------
+isolatedPixel(FileName) :-
+    load(FileName, S),
+    nb_setval(coords, S),
+    nb_setval(final, []),
+    lonely(S), !,
+    nb_getval(final, V),
+    write(V).
+
+lonely([]) :-
+    !.
+
+lonely([(X, Y, I)|T_input]) :-
+    nb_getval(coords, S),
+    n4(S,(X, Y, I), L),
+    seeNeighboorhood(L, I),
+    nb_getval(final, W),
+    insert_at((X, Y, I), W, 1, L1),
+    nb_setval(final, L1),
+    lonely(T_input).
+
+lonely([(X, Y, I)|T_input]) :-
+    lonely(T_input).
+
+seeNeighboorhood([], _) :-
+    !.
+
+seeNeighboorhood([(X, Y, I)|T], V) :-
+    I < V,
+    seeNeighboorhood(T,V).
+
+
+%--------CAMINHO---------------
+existPath(FileName, R1, C1, R2, C2) :-
+    load(FileName, S),
+    nb_setval(coords, S),
+    nb_setval(final, []),
+    getPixel(S, (R1,C1,V)),
+    getPixel(S, (R2, C2, I)),
+    sub_neg1(R1, C1, V, R2, C2), !,
+    nb_getval(final, V),
+    write(V).
+
+sub_neg1(R1, C1, V, R2, C2) :-
+    nb_getval(coords, S),
+    n4(S,(R1, C1, V), L),
+    nb_setval(xis, R1),
+    nb_setval(ipslon, C1),
+    %write(L),
+    seeNeighboorhoodPath(L, V, R2, C2),
+    R1 =:= R2,
+    C1 =:= C2,
+    write('Existe').
+
+
+seeNeighboorhoodPath([], _) :-
+    !.
+
+seeNeighboorhoodPath([(X, Y, I)|T], V, R2, C2) :-
+    write('O'),
+    nb_getval(xis, Xant),
+    nb_getval(ipslon, Yant),
+    (X \= Xant;
+    Y \= Yant ->
+    I >= V,
+    sub_neg1(X, Y, I, R2, C2),
+    seeNeighboorhoodPath(T,V, R2, C2, I)).
+
+seeNeighboorhoodPath([(X, Y, I)|T], V, R2, C2) :-
+    write('H'),
+    seeNeighboorhoodPath(T, V, R2, C2).
+
+
+%-------MEDIA----------
+avaregeImages(M1, M2) :-
+    load(M1, S),
+    load(M2, J),
+    avarege(S, J, W),
+    coord2matrix(W, L),
+    atom_concat('New', '_out.pgm', NewM),
+    writePGM(NewM, L).
+
+avarege([], [], []) :-
+    !.
+avarege([(X, Y, I)|T_input], [(_, _, K)|L_input] ,[H_output|T_output]) :-
+    New_intensity is (I + K)/2,
+    copy_term((X, Y, New_intensity), H_output),
+    avarege(T_input, L_input, T_output).
+
+%-------------New func-------------
+remove_at(X,[X|Xs],1,Xs).
+remove_at(X,[Y|Xs],K,[Y|Ys]) :-
+    K > 1, 
+    K1 is K - 1,
+    remove_at(X,Xs,K1,Ys).
+insert_at(X,L,K,R) :- remove_at(X,R,K,L).
+
+add(X, L, [X|L]).
+add_list([], L, L).
+add_list([H|T], L, L1) :- add(H, L2, L1), add_list(T, L, L2).
+
+lUltimo([X], X).
+lUltimo([H|T], L) :- lUltimo(T, L).
