@@ -1,0 +1,11 @@
+Projeto 1
+
+Autores: Pedro van Rooij Costa
+Nelson Mariano Leite Neto
+Bruno Freitas
+
+
+compilacao:
+
+	1. abra o ghci
+	2. :l proj.hs

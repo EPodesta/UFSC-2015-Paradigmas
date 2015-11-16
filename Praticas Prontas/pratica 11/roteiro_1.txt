@@ -1,0 +1,12 @@
+Paradigmas de Programação
+Relatório Prática 11
+Alunos: 
+Pedro van Rooij Costa
+Nelson Mariano Leite Neto
+Bruno Freitas
+
+
+Usar Monadas se mostrou realmente eficiente para evitar situacoes em que ocorre uma divisao por 0
+
+Mesmo com os devidos cuidados para isso não acontecer, ao usar Monadas não precisamos nos preocupar com
+"ifs e elses" assim fica uma forma mais simples de verificacao de erros, evitando portanto que o programa caia constantemente.

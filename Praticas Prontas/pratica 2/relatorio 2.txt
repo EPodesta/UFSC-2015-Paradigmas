@@ -1,0 +1,43 @@
+Paradigmas de Programação
+Relatório Prática 2
+Aluno: 
+Claudio Dettoni
+
+Listagem 1
+
+(short int): 2 bytes
+(int): 4 bytes
+(unsigned int): 4 bytes
+(long int): 4 bytes
+(unsigned long int): 4 bytes
+(float): 4 bytes
+(double): 8 bytes
+(long double): 12 bytes
+(char): 1 byte
+
+Listagem 2
+                -- endereco x = 0x 055c
+a= \            -- caractere ascii 5c 
+cont a: 5c      -- valor do endereco de memoria do char a
+cont end x: 55C -- valor do endereco de memoria do shortint x
+                -- so mostra os dois ultimos pois o char ocupa somente 1 byte
+                -- e o short int 2 bytes
+      
+Listagem 3
+
+pi=3.1415926536 ch= [codigo ascii nao representado]
+
+-- primeira o valor de pi normalmente
+-- segunda variavel => tenta imprimir pi como um char
+              	    => pega o endereco de pi, da um cast para char array e tenta               => mostrar o valor do primeiro byte em little endian do pi
+ 
+Listagem 4
+
+37.000000  -- representa o inteiro 37 em float
+0.00000000000000000000000000000000000000000005184804318001823162417799458172689686
+           -- tenta representar o endereco do ponteiro que aponta para i
+           -- pos perante este valor ponteiro i eh interpretado como um
+           -- ponto flutuante, portanto na hora da impressao ele imprime um 
+           -- valor errado errado devido ao meio como um ponto flutuante é interpretado
+
+

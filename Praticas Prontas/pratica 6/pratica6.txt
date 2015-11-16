@@ -1,0 +1,21 @@
+Paradigmas de Programação
+Relatório Prática 6
+Alunos: 
+Pedro van Rooij Costa
+Nelson Mariano Leite Neto
+Bruno Freitas
+
+---> Roteiro 1:
+	Interessante ver como Haskell trata as vás variaveis e principalmente ver como ele consegue rapidamente detectar que tipo de variavel esta sendo usada, e efetuar diferentes calculos a partir disso.
+
+
+---> Roteiro 2:
+	Exercicio1: 
+		1. Funcao que incrementa um dado x.
+		2. Funcao que eh uma multiplicacao de pares ate um dado n.
+		3. Funcao que mostra o primeiro elemento de uma lista.
+		4. Funcao que mostra o ultimo elemento de uma lista.
+		5. Funcao que rotaciona os elementos de uma lista.
+	
+	Exercicio2:
+		Triads eh uma funcao que gera 3 listas de 1 ate n e verifica se a * 2 + b * 2 eh igual a c * 2 ou seja se os 3 (a,b,c) pertencem a um triângulo retângulo.

@@ -1,0 +1,22 @@
+Paradigmas de ProgramaÃ§Ã£o
+Relatorio Pratica 10
+Alunos: 
+Pedro van Rooij Costa
+Nelson Mariano Leite Neto
+Bruno Freitas
+
+>>>> Roteiro <<<<
+A fun‹o que soma os termos de uma PA de n termos pode ser obtida atravŽs do seguinte c—digo em Haskell:
+
+somaLista[] = 0
+somaLista(a:x) = a + somaLista x
+
+Aqui temos uma fun‹o recursiva que soma os termos dos elementos ate que a lista seja vazia. Ou seja, no caso em que
+a lista esta vazia, temos a base da recurso, onde para uma lista vazia eh retornado zero.
+
+O produto dos termos de uma PG sÃ£o obtidos de maneira analoga atravŽs do seguinte c—digo:
+
+
+produtoLista[] = 1
+produtoLista(a:x) = a*produtoLista x
+

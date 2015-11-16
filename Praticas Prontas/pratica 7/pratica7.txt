@@ -1,0 +1,16 @@
+Paradigmas de Programação
+Relatório Prática 7
+Alunos: 
+Pedro van Rooij Costa
+Nelson Mariano Leite Neto
+Bruno Freitas
+
+---> Roteiro 1:
+	- Bom saber como deixar um programa mais modular, assim fica mais
+facil de se achar ou ate mesmo de saber aonde os erros se encontram
+
+---> Roteiro 2:
+	-- O programa se encontra na pasta Conversor
+
+	- O programa foi feito com 4 arquivos local.h funcoes.c interface.c e principal.c e devem ser compilados digitando "make" no terminal.
+	- O arquivo makefile eh um arquivo bem simples que apenas compila o  programa e cria um executavel chamado "conversor".
