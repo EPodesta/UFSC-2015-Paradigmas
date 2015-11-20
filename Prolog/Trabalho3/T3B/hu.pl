@@ -145,19 +145,12 @@ hu(S, I1, I2, I3, I4, I5, I6, I7) :-
 
 % T3B
 % -------------------------
-:- initialization(addImages).
 
 addImages :-
     load,
     retractall(image(_,_,_,_,_,_,_,_)),
-    readPGM('pgm/apple-1.pgm', S),
-    coord(S, SS),
-    hu(SS, I1, I2, I3, I4, I5, I6, I7),
-    new(apple-1, I1, I2, I3, I4, I5, I6, I7),
-    readPGM('pgm/apple-10.pgm', W),
-    coord(W, WW),
-    hu(WW, S1, S2, S3, S4, S5, S6, S7),
-    new(apple-10, S1, S2, S3, S4, S5, S6, S7),
+    new('pgm/apple-1.pgm', apple-1),
+    new('pgm/bat-5.pgm', bat-5),
     commit.
 
 
@@ -179,23 +172,77 @@ commit :-
     close(Stream).
 
 
-new(Id,I1,I2,I3,I4,I5,I6,I7) :-
+new(Filename, Id) :-
+    readPGM(Filename, S),
+    coord(S, SS),
+    hu(SS, I1,I2,I3,I4,I5,I6,I7),
     assertz(image(Id,I1,I2,I3,I4,I5,I6,I7)),
     !.
 
+new(Id, I1,I2,I3,I4,I5,I6,I7) :-
+    assertz(image(Id, I1,I2,I3,I4,I5,I6,I7)),
+    !.
 
 discoverImage(FileName) :-
     readPGM(FileName, S),
     coord(S, SS),
-    hu(S, I1,I2,I3,I4,I5,I6,I7),
-    compare(I1,I2,I3,I4,I5,I6,I7).
+    hu(SS, I1,I2,I3,I4,I5,I6,I7),
+    findall(E, image(E,_,_,_,_,_,_,_), All),
+    compare(All, I1,I2,I3,I4,I5,I6,I7, W),
+    min_list(W, Min),
+    nb_setval(posicao, -1),
+    min_pos(W, Min, Pos),
+    nth0(Pos, All, Image),
+    write(All),
+    write(W),
+    write(Pos),
+    write(Image), nl,
+    write('Is this your image?'), nl,
+    read(X),
+    (   
+        (X = 'n'; X = 'no') ->
+            write('Type the Id of the Image:'), nl,
+            read(Y),
+                new(Y, I1,I2,I3,I4,I5,I6,I7),
+                write('Image Added.'), nl,
+                commit, halt;
+                ((X = 'y'; X = 'yes') ->
+                    (Min =:= 0 -> write('Not adding, it\'s the same image.'), nl, halt; 
+                        new(Image, I1,I2,I3,I4,I5,I6,I7),
+                        write('Image Added.'), nl,
+                        commit, halt
+                    )
+                )
+    ).
 
-compare(I1,I2,I3,I4,I5,I6,I7) :-
-    image(Id,X1,X2,X3,X4,X5,X6,X7),
+min_pos([L|Ls], Min, Pos) :-
+    (L =:= Min ->
+        nb_getval(posicao, P),
+        Pos is P + 1;
+        nb_getval(posicao, P),
+        NewP is P + 1,
+        nb_setval(posicao, NewP),
+        min_pos(Ls, Min, Pos)
+    ).
+
+list_min([], Min, Min).
+list_min([L|Ls], Min0, Min) :-
+    Min1 is min(L, Min0),
+    nb_getval(posicao, Pos),
+    NewPos is Pos + 1,
+    nb_setval(posicao, NewPos),
+    list_min(Ls, Min1, Min).
+
+compare([],_,_,_,_,_,_,_,[]) :-
+    !.
+
+compare([Head|Tail], I1,I2,I3,I4,I5,I6,I7, [H_output|T_output]) :-
+    image(Head,X1,X2,X3,X4,X5,X6,X7),
     distEuclidian([I1,I2,I3,I4,I5,I6,I7],[X1,X2,X3,X4,X5,X6,X7], List),
     sum_list(List, Sum),
-    
-    write(Sum).
+    copy_term(Sum, H_output),
+    compare(Tail,I1,I2,I3,I4,I5,I6,I7, T_output).
+
 
 distEuclidian([],[],[]) :- !.
 

@@ -15,9 +15,9 @@ type RaioDaSeccao = Float
 type Altura = Float
 excentricidade::RaioEq -> RaioPolar -> Float
 excentricidade a b   
-               | b < a = sqrt((a^2 - b^2)/(a^2)) -- Esferoide Oblate  (a = b > c)
-               | b > a = sqrt((b^2 - a^2)/(b^2)) -- Esferoide Prolate (a = b < c)
-               | b == a = 0                      -- Esfera   (a = b = c)
+               | b < a = sqrt((a^2 - b^2)/(a^2)) 
+               | b > a = sqrt((b^2 - a^2)/(b^2)) 
+               | b == a = 0                      
 
 
 area::Forma -> Float
