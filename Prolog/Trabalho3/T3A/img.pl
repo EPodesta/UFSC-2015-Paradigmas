@@ -448,7 +448,7 @@ avaregeImages(FileName1, FileName2) :-
     readPGM(FileName1, M1),
     coord(M1, S),
     readPGM(FileName2, M2),
-    coord(M2, S),
+    coord(M2, J),
     avarege(S, J, W),
     coord2matrix(W, L),
     atom_concat('Media', '_out.pgm', NewM),
