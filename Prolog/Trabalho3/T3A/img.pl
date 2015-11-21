@@ -470,6 +470,43 @@ remove_at(X,[Y|Xs],K,[Y|Ys]) :-
 insert_at(X,L,K,R) :- remove_at(X,R,K,L).
 
 
+%--------- New function / Color Checker ----------
+% This function checks whether the image have more 
+% black or white pixels in its constituion.
+%
+% Examples:
+%
+%   ?- checkColor('tests/test_black.pgm')
+%   The given picture is more black than white.
+%   true.
+%   
+%   ?- checkColor('tests/test_white.pgm')
+%   The given picture is whiter than black.
+%   true.
+%
+%   ?- checkColor('tests/test_gray.pgm')
+%   Wow, the given picture is black and white in the same proportion.
+%   true.
+%
+colorChecker([]) :-
+    !.
+
+colorChecker([(X, Y, V)|T_input]) :-
+    nb_getval(intensity, Intensity),
+    (V >= 128 -> NewValue is Intensity + 1 ; NewValue is Intensity - 1),
+    nb_setval(intensity, NewValue),
+    colorChecker(T_input).
+
+checkColor(Filename) :-
+    readPGM(Filename, Load),
+    coord(Load, S),
+    nb_setval(intensity, 0),
+    colorChecker(S),
+    nb_getval(intensity, Intensity),
+    (Intensity == 0 -> 
+        write('Wow, the given picture is black and white in the same proportion.') ;
+        (Intensity > 0 -> write('The given picture is more black than white.') ; write('The given picture is whiter than black.')) ).
+
 % TESTS
 % -------------------------
 /*
