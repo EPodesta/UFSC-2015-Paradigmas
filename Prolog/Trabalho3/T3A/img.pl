@@ -444,22 +444,22 @@ existPath(FileName, (R1, C1, _), (R2, C2, _), [H_output|T_output]) :-
 
 
 %-------MEDIA----------
-avaregeImages(FileName1, FileName2) :-
+average(FileName1, FileName2) :-
     readPGM(FileName1, M1),
     coord(M1, S),
     readPGM(FileName2, M2),
     coord(M2, J),
-    avarege(S, J, W),
+    average(S, J, W),
     coord2matrix(W, L),
     atom_concat('Media', '_out.pgm', NewM),
     writePGM(NewM, L).
 
-avarege([], [], []) :-
+average([], [], []) :-
     !.
-avarege([(X, Y, I)|T_input], [(_, _, K)|L_input] ,[H_output|T_output]) :-
+average([(X, Y, I)|T_input], [(_, _, K)|L_input] ,[H_output|T_output]) :-
     New_intensity is (I + K)/2,
     copy_term((X, Y, New_intensity), H_output),
-    avarege(T_input, L_input, T_output).
+    average(T_input, L_input, T_output).
 
 %-------------New func-------------
 remove_at(X,[X|Xs],1,Xs).
@@ -484,7 +484,7 @@ insert_at(X,L,K,R) :- remove_at(X,R,K,L).
 %   The given picture is whiter than black.
 %   true.
 %
-%   ?- checkColor('tests/test_gray.pgm')
+%   ?- checkColor('tests/test_grey.pgm')
 %   Wow, the given picture is black and white in the same proportion.
 %   true.
 %
