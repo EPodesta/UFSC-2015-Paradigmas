@@ -1,3 +1,5 @@
+--Emmanuel Podestá Junior  13200638
+--
 module Formas (Forma (Esferoide, Cilindro, Cone, Tronco),
                RaioEq, RaioPolar, Altura, RaioDaBase, RaioDaSeccao) where
 
@@ -15,16 +17,17 @@ type RaioDaSeccao = Float
 type Altura = Float
 excentricidade::RaioEq -> RaioPolar -> Float
 excentricidade a b   
-               | b < a = sqrt((a^2 - b^2)/(a^2)) 
-               | b > a = sqrt((b^2 - a^2)/(b^2)) 
-               | b == a = 0                      
+               | b < a = sqrt((a^2 - b^2)/(a^2)) -- oblato
+               | b > a = sqrt((b^2 - a^2)/(b^2)) -- prolato
+               | b == a = 0                      -- esfera
 
 
 area::Forma -> Float
-area (Esferoide a c)
+area (Esferoide a c) --O esferoide oblato e prolato serão determinados pelo "a" e o "c"
     | c < a = 2*pi*a^2 + ((pi*c^2)/(excentricidade a c))*log((1 + excentricidade a c)/(1 - excentricidade a c))
     | c > a = 2*pi*(a^2 + ((a*c)/(excentricidade a c))*(asin(excentricidade a c)))
     | c == a = 4*pi*c^2
+
 area (Cilindro r h) = 2*pi*r*(r+h)
 area (Cone r h) = pi*r*(sqrt(r^2 + h^2) + r)
 area (Tronco r1 r2 h) = pi*(r1^2 + r2^2 + (r1+r2)*sqrt(h^2 + (r1 - r2)^2))

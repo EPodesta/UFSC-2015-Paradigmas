@@ -407,6 +407,11 @@ verifyFinalCoord((R1,C1,I1),(R2,C2,I2)) :-
     C1 = C2,
     !.
 
+verifyLoop([], _) :-
+    false.
+verifyLoop([(X, Y, _)|T], (R, C, I)) :-
+    (X = Xs, Y = Ys ->  true; check_loop(T, (R, C, I))).
+
 checkNeighboorhood([], (R1,C1,I1), (R2,C2,I2), (X, Y, I)) :-
     X is R1,
     Y is C1,
@@ -421,24 +426,26 @@ checkNeighboorhood([(X, Y, I)|Tail], (R1,C1,I1), (R2,C2,I2), Higher) :-
         )
     ).
 
-existPath([], _, _, []) :- !.
+existPath([], _, _,Comp , Output) :-
+    reverse(Comp, Output).
 
-existPath(FileName, (R1, C1, _), (R2, C2, _), [H_output|T_output]) :-
+existPath(FileName, (R1, C1, _), (R2, C2, _), Comp, Output) :-
     readPGM(FileName, M),
     coord(M, S),
     getPixel(S, (R1,C1,I1)),
     getPixel(S, (R2,C2,I2)),
-    copy_term((R1, C1), H_output),
     (R1 = R2, C1 = C2 -> 
         write('Path has been found:'), nl,
-        copy_term([], T_output),
+        reverse([(R1, C1, I1)|Comp], Output),
         true;
         n4(S, (R1,C1,I1), List),
-        checkNeighboorhood(List, (R1,C1,I1),(R2, C2, I2), Higher),
-        (verifyFinalCoord((R1,C1,I1), Higher) ->
+        intersection(List, Comp, Intersection),
+        subtract(List, Intersection, Nlist),
+        checkNeighboorhood(Nlist, (R1,C1,I1),(R2, C2, I2), Higher),
+        (verifyLoop(Comp, Higher) ->
             write('None path has been found'), nl,
-            copy_term([], T_output);
-            existPath(FileName, Higher, (R2, C2, 0), T_output)
+            reverse([(R1,C1,I1)|Comp], Output);
+            existPath(FileName, Higher, (R2, C2, I2), [(R1,C1,I1)|Comp], Output)
         )
     ).
 
