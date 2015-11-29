@@ -187,16 +187,24 @@ discoverImage(FileName) :-
     readPGM(FileName, S),
     coord(S, SS),
     hu(SS, I1,I2,I3,I4,I5,I6,I7),
-    findall(E, image(E,_,_,_,_,_,_,_), All),
+    findall([E,X1,X2,X3,X4,X5,X6,X7], image(E,X1,X2,X3,X4,X5,X6,X7), All),
     compare(All, I1,I2,I3,I4,I5,I6,I7, W),
     min_list(W, Min),
     nb_setval(posicao, -1),
     min_pos(W, Min, Pos),
     nth0(Pos, All, Image),
-    write(All),
+    %write(All),
     write(W),
-    write(Pos),
-    write(Image), nl,
+    %write(Pos),
+    %write(I1),  
+    %write(I2),
+    %write(I3),
+    %write(I4),
+    %write(I5),
+    %write(I6),
+    %write(I7),
+    nth0(0, Image, I),
+    write(I), nl,
     write('Is this your image?'), nl,
     read(X),
     (   
@@ -208,7 +216,7 @@ discoverImage(FileName) :-
                 commit, halt;
                 ((X = 'y'; X = 'yes') ->
                     (Min =:= 0 -> write('Not adding, it\'s the same image.'), nl, halt; 
-                        new(Image, I1,I2,I3,I4,I5,I6,I7),
+                        new(I, I1,I2,I3,I4,I5,I6,I7),
                         write('Image Added.'), nl,
                         commit, halt
                     )
@@ -237,7 +245,17 @@ compare([],_,_,_,_,_,_,_,[]) :-
     !.
 
 compare([Head|Tail], I1,I2,I3,I4,I5,I6,I7, [H_output|T_output]) :-
-    image(Head,X1,X2,X3,X4,X5,X6,X7),
+    nth0(0, Head, H),
+    nth0(1, Head, X1),
+    nth0(2, Head, X2),
+    nth0(3, Head, X3),
+    nth0(4, Head, X4),
+    nth0(5, Head, X5),
+    nth0(6, Head, X6),
+    nth0(7, Head, X7),
+    image(H,X1,X2,X3,X4,X5,X6,X7),
+    %write('Compare this: '), nl, write(X1), nl,write(X2), nl,write(X3), nl,write(X4), nl,write(X5), nl,write(X6), nl,write(X7), nl, nl,
+    %write('with this: '), nl, write(I1), nl,write(I2), nl,write(I3), nl,write(I4), nl,write(I5), nl,write(I6), nl,write(I7), nl, nl,
     distEuclidian([I1,I2,I3,I4,I5,I6,I7],[X1,X2,X3,X4,X5,X6,X7], List),
     sum_list(List, Sum),
     copy_term(Sum, H_output),
@@ -254,7 +272,7 @@ distEuclidian([I_input|I_output], [X_input|X_output], [Input|Output]) :-
     SqrtH is sqrt(PowH),
     copy_term(SqrtH, Input),
     distEuclidian(I_output, X_output, Output).
-
+%-----------------------------------------------------
 
 test :-
     coord([[20,5,1],[4,10,50],[4,2,5]], S),

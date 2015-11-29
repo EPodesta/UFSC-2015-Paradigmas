@@ -402,52 +402,34 @@ seeNeighboorhood([(X, Y, I)|T], V) :-
 
 
 %--------CAMINHO---------------
-verifyFinalCoord((R1,C1,I1),(R2,C2,I2)) :-
-    R1 = R2,
-    C1 = C2,
-    !.
+path(FileName, (X1, Y1, I1),(X2,Y2,I2),Path) :-
+    readPGM(FileName, S),
+    coord(S, SS),
+    travel(SS, (X1,Y1,I1),(X2,Y2,I2),[(X1,Y1,I1)],Q),
+    reverse(Q,Path).
 
-verifyLoop([], _) :-
-    false.
-verifyLoop([(X, Y, _)|T], (R, C, I)) :-
-    (X = Xs, Y = Ys ->  true; check_loop(T, (R, C, I))).
 
-checkNeighboorhood([], (R1,C1,I1), (R2,C2,I2), (X, Y, I)) :-
-    X is R1,
-    Y is C1,
-    I is I1.
+travel(S, (X1,Y1,I1),(X2,Y2,I2),P,[B|P]) :-
+    n4(S, (X1,Y1,I1),W),
+    runN4(W, (X2,Y2,I2)).
 
-checkNeighboorhood([(X, Y, I)|Tail], (R1,C1,I1), (R2,C2,I2), Higher) :-
-    (verifyFinalCoord((R1,C1,I1),(R2,C2,I2)) -> 
-        checkNeighboorhood([], (R1,C1,I1),(R2,C2,I2), Higher);
-        (I >= I1 ->
-            checkNeighboorhood(Tail, (X,Y,I), (R2,C2,I2), Higher);
-            checkNeighboorhood(Tail, (R1,C1,I1), (R2,C2,I2), Higher)
-        )
-    ).
+runN4([], (_,_,_)) :- false.
 
-existPath([], _, _,Comp , Output) :-
-    reverse(Comp, Output).
+runN4([(X,Y,I)|Rabo], (R,C,I)) :-
+    (X,Y,I) = (R,C,I),
+    runN4(Rabo, (R,C,I)).
 
-existPath(FileName, (R1, C1, _), (R2, C2, _), Comp, Output) :-
-    readPGM(FileName, M),
-    coord(M, S),
-    getPixel(S, (R1,C1,I1)),
-    getPixel(S, (R2,C2,I2)),
-    (R1 = R2, C1 = C2 -> 
-        write('Path has been found:'), nl,
-        reverse([(R1, C1, I1)|Comp], Output),
-        true;
-        n4(S, (R1,C1,I1), List),
-        intersection(List, Comp, Intersection),
-        subtract(List, Intersection, Nlist),
-        checkNeighboorhood(Nlist, (R1,C1,I1),(R2, C2, I2), Higher),
-        (verifyLoop(Comp, Higher) ->
-            write('None path has been found'), nl,
-            reverse([(R1,C1,I1)|Comp], Output);
-            existPath(FileName, Higher, (R2, C2, I2), [(R1,C1,I1)|Comp], Output)
-        )
-    ).
+
+travel(S, (X1,Y1,I1),(X2,Y2,I2),Visited,Path) :-
+    n4(S, (X1,Y1,I1), W),
+    calcPath(W, (X1,Y1,I1), (X2,Y2,I2), Visited, Path).
+
+
+calcPath([(X,Y,I)|Rabo], (X1,Y1,I1),(X2,Y2,I2),Visited,Path) :-
+    write('U'),
+    (X,Y,I) \== (X2,Y2,I2),
+    \+member((X,Y,I),Visited),
+    calcPath(Rabo, (X,Y,I),(X2,Y2,I2),[(X,Y,I)|Visited],Path).
 
 
 %-------MEDIA----------
@@ -503,4 +485,52 @@ insert_at(X,L,K,R) :- remove_at(X,R,K,L).
       V = 7,
       S1 = [ (0, 0, 4), (0, 1, 0), (0, 2, 0), (0, 3, 0), (0, 4, 0), (0, 5, 0), (0, 6, 0), (0, ..., ...), (..., ...)|...],
       V1 = 777
+
+      verifyFinalCoord((R1,C1,I1),(R2,C2,I2)) :-
+    R1 = R2,
+    C1 = C2,
+    !.
+
+verifyLoop([], _) :-
+    false.
+verifyLoop([(X, Y, _)|T], (R, C, I)) :-
+    (X = Xs, Y = Ys ->  true; check_loop(T, (R, C, I))).
+
+checkNeighboorhood([], (R1,C1,I1), (R2,C2,I2), (X, Y, I)) :-
+    X is R1,
+    Y is C1,
+    I is I1.
+
+checkNeighboorhood([(X, Y, I)|Tail], (R1,C1,I1), (R2,C2,I2), Higher) :-
+    (verifyFinalCoord((R1,C1,I1),(R2,C2,I2)) -> 
+        checkNeighboorhood([], (R1,C1,I1),(R2,C2,I2), Higher);
+        (I >= I1 ->
+            checkNeighboorhood(Tail, (X,Y,I), (R2,C2,I2), Higher);
+            checkNeighboorhood(Tail, (R1,C1,I1), (R2,C2,I2), Higher)
+        )
+    ).
+
+existPath([], _, _,Comp , Output) :-
+    reverse(Comp, Output).
+
+existPath(FileName, (R1, C1, _), (R2, C2, _), Comp, Output) :-
+    readPGM(FileName, M),
+    coord(M, S),
+    getPixel(S, (R1,C1,I1)),
+    getPixel(S, (R2,C2,I2)),
+    (R1 = R2, C1 = C2 -> 
+        write('Path has been found:'), nl,
+        reverse([(R1, C1, I1)|Comp], Output),
+        true;
+        n4(S, (R1,C1,I1), List),
+        intersection(List, Comp, Intersection),
+        subtract(List, Intersection, Nlist),
+        checkNeighboorhood(Nlist, (R1,C1,I1),(R2, C2, I2), Higher),
+        (verifyLoop(Comp, Higher) ->
+            write('None path has been found'), nl,
+            reverse([(R1,C1,I1)|Comp], Output);
+            existPath(FileName, Higher, (R2, C2, I2), [(R1,C1,I1)|Comp], Output)
+        )
+    ).
+
 */

@@ -24,10 +24,12 @@ toList (x, y, z) = [x, y, z]
 processFiles input = do
     inString <- readFile input
     let filename = take (length input - 4) input
-    let outnames = map (filename++) ["_blue.out", "_green.out", "_red.out"]
-    output1 <- openFile input_blue WriteMode
-    output2 <- openFile input_green WriteMode
-    output3 <- openFile input_red WriteMode
+    let outname1 = map (filename++) ["_blue.out"
+    let outname2 = map(filename++) ["_green.out"]
+    let outname3 = map (filename++) ["_red.out"]
+    output1 <- openFile outname1 WriteMode
+    output2 <- openFile outname2 WriteMode
+    output3 <- openFile outname3 WriteMode
     --outputs <- sequence [openFile f WriteMode | f <- outnames]
     let body = snd (splitAt 54 (map ord inString))
     let rgb = toList (splitRGB (map fpoint body))
