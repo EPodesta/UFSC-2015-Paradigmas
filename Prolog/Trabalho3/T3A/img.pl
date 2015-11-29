@@ -433,22 +433,22 @@ calcPath([(X,Y,I)|Rabo], (X1,Y1,I1),(X2,Y2,I2),Visited,Path) :-
 
 
 %-------MEDIA----------
-avaregeImages(FileName1, FileName2) :-
+average(FileName1, FileName2) :-
     readPGM(FileName1, M1),
     coord(M1, S),
     readPGM(FileName2, M2),
     coord(M2, J),
-    avarege(S, J, W),
+    average(S, J, W),
     coord2matrix(W, L),
     atom_concat('Media', '_out.pgm', NewM),
     writePGM(NewM, L).
 
-avarege([], [], []) :-
+average([], [], []) :-
     !.
-avarege([(X, Y, I)|T_input], [(_, _, K)|L_input] ,[H_output|T_output]) :-
+average([(X, Y, I)|T_input], [(_, _, K)|L_input] ,[H_output|T_output]) :-
     New_intensity is (I + K)/2,
     copy_term((X, Y, New_intensity), H_output),
-    avarege(T_input, L_input, T_output).
+    average(T_input, L_input, T_output).
 
 %-------------New func-------------
 remove_at(X,[X|Xs],1,Xs).
@@ -458,6 +458,43 @@ remove_at(X,[Y|Xs],K,[Y|Ys]) :-
     remove_at(X,Xs,K1,Ys).
 insert_at(X,L,K,R) :- remove_at(X,R,K,L).
 
+
+%--------- New function / Color Checker ----------
+% This function checks whether the image have more 
+% black or white pixels in its constituion.
+%
+% Examples:
+%
+%   ?- checkColor('tests/test_black.pgm')
+%   The given picture is more black than white.
+%   true.
+%   
+%   ?- checkColor('tests/test_white.pgm')
+%   The given picture is whiter than black.
+%   true.
+%
+%   ?- checkColor('tests/test_grey.pgm')
+%   Wow, the given picture is black and white in the same proportion.
+%   true.
+%
+colorChecker([]) :-
+    !.
+
+colorChecker([(X, Y, V)|T_input]) :-
+    nb_getval(intensity, Intensity),
+    (V >= 128 -> NewValue is Intensity + 1 ; NewValue is Intensity - 1),
+    nb_setval(intensity, NewValue),
+    colorChecker(T_input).
+
+checkColor(Filename) :-
+    readPGM(Filename, Load),
+    coord(Load, S),
+    nb_setval(intensity, 0),
+    colorChecker(S),
+    nb_getval(intensity, Intensity),
+    (Intensity == 0 -> 
+        write('Wow, the given picture is black and white in the same proportion.') ;
+        (Intensity > 0 -> write('The given picture is more black than white.') ; write('The given picture is whiter than black.')) ).
 
 % TESTS
 % -------------------------
